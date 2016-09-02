@@ -6,7 +6,7 @@
 %%% @end
 %%% Created : 02. Sep 2016 3:16 PM
 %%%-------------------------------------------------------------------
--module(rudy_test).
+-module(rudy).
 -author("Nick").
 
 %% API
@@ -46,6 +46,7 @@ request(Client) ->
   gen_tcp:close(Client).
 
 reply({{get, URI, _}, _, _}) ->
-  Res = http:ok("U fine buddy"),
+  timer:sleep(40), %simulate handling
+  Res = http:ok(URI),
   % io:fwrite(Res),
   Res.

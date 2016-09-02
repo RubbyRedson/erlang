@@ -22,7 +22,7 @@ parse_request(R0) ->
   {Body, _} = message_body(R2),
   {Request, Headers, Body}.
 
-request_line([$G, $E, $T, 32 | R0]) -> %""" Problem: only parse GET requests """
+request_line([$G, $E, $T, 32 | R0]) -> %""" Problem: 1) only parse GET requests, 2) Don't flush unreadable messages -> queue can be blown """
   {URI, R1} = request_uri(R0),
   {Ver, R2} = http_version(R1),
   [13, 10 | R3] = R2,
