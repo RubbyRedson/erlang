@@ -10,9 +10,12 @@
 -author("Nick").
 
 %% API
--export([start/1, stop/0]).
+-export([start/1, stop/0, start_concurrent/1]).
 
 start(Port) ->
   register(rudy, spawn(fun() -> rudy:init(Port) end)).
 stop() ->
   exit(whereis(rudy), "time to die").
+
+start_concurrent(Port) ->
+  register(rudy, spawn(fun() -> rudy_concurrent:init(Port) end)).
