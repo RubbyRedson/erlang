@@ -35,5 +35,4 @@ request(Client) ->
 reply({{get, URI, _}, _, _}) ->
   timer:sleep(40), %simulate handling
   Res = http:ok(URI),
-  % io:fwrite(Res),
   Res.

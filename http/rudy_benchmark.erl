@@ -70,6 +70,6 @@ run_concurrent(N, Host, Port) ->
 
 run_wrapper(Host, Port) ->
   Start = erlang:system_time(micro_seconds),
-  run(5, Host, Port),
+  run(1, Host, Port),
   Finish = erlang:system_time(micro_seconds),
   file:write_file("D:/tmp/foo.txt", io_lib:fwrite("~p.\n", [Finish - Start]), [append]).
