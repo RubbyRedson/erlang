@@ -13,8 +13,10 @@
 -export([handle/0]).
 handle() ->
   receive
-    {accept, Socket} ->
-      request(Socket)
+    {accept, Socket, Supervisor, Pid} ->
+      request(Socket),
+      Supervisor ! {free_process, Pid},
+      handle()
   end.
 
 request(Client) ->
