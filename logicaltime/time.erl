@@ -36,24 +36,23 @@ update(Node, Time, Clock) ->
   case lists:keyfind(Node, 1, Clock) of
     false -> [{Node, Time} | Clock];
     {_, Current} ->
-      if Current == none -> {new, lists:keyreplace(Node, 1, Clock, {Node, Time})};
-        true ->
-          if Current >= Time -> Clock;
-            true -> {new, lists:keyreplace(Node, 1, Clock, {Node, Time})}
-          end
+      if Time > Current -> lists:keyreplace(Node, 1, Clock, {Node, Time});
+        true -> Clock
       end
   end.
 
 safe(Time, Clock) ->
-  Max = get_max(Clock),
-  if Time >= Max -> true;
+  Min = get_min(Clock),
+%%  io:format("Check safe; Time ~w Min ~w Clock ~w~n", [Time, Min, Clock]),
+  if Time =< Min -> true;
     true -> false
   end.
 
 
-get_max(Clock) ->
-  if length(Clock) == 0 -> 0;
+get_min(Clock) ->
+  if length(Clock) == 0 -> inf;
     true ->
-      [H | T] = Clock,
-      max(H, get_max(T))
+%%      io:format("get_max Clock ~w~n", [Clock]),
+      [{_, Time} | T] = Clock,
+      min(Time, get_min(T))
   end.

@@ -22,7 +22,7 @@ init(Name, Log, Seed, Sleep, Jitter) ->
   random:seed(Seed, Seed, Seed),
   receive
     {peers, Peers} ->
-      loop(Name, Log, Peers, Sleep, Jitter);
+      loop(Name, time:zero(), Log, Peers, Sleep, Jitter);
     stop ->
       ok
   end.
@@ -30,28 +30,32 @@ init(Name, Log, Seed, Sleep, Jitter) ->
 peers(Wrk, Peers) ->
   Wrk ! {peers, Peers}.
 
-loop(Name, Log, Peers, Sleep, Jitter) ->
-  Wait = random:uniform(Sleep),
+loop(Name, Time, Log, Peers, Sleep, Jitter) ->
+  Wait = rand:uniform(Sleep),
   receive
-    {msg, Time, Msg} ->
-      Log ! {log, Name, Time, {received, Msg}},
-      loop(Name, Log, Peers, Sleep, Jitter);
+    {msg, TimeRec, Msg} ->
+      TimeN = time:merge(TimeRec, Time) + 1,
+%%      io:format("loop ~w Time ~w TimeN ~w Received ~w~n", [Name, Time, TimeN, Msg]),
+      Log ! {log, Name, TimeN, {received, Msg}},
+      loop(Name, TimeN, Log, Peers, Sleep, Jitter);
     stop ->
       ok;
     Error ->
-      Log ! {log, Name, time, {error, Error}}
+      Log ! {log, Name, Time, {error, Error}}
   after Wait ->
     Selected = select(Peers),
-    Time = na,
-    Message = {hello, random:uniform(100)},
-    Selected ! {msg, Time, Message},
+    TimeN = time:inc(Name, Time),
+    Message = {hello, TimeN},
+    Selected ! {msg, TimeN, Message},
 
     jitter(Jitter),
-    Log ! {log, Name, Time, {sending, Message}},
-    loop(Name, Log, Peers, Sleep, Jitter)
+
+    Log ! {log, Name, TimeN, {sending, Message}},
+    loop(Name, TimeN, Log, Peers, Sleep, Jitter)
   end.
 
 select(Peers) ->
-  lists:nth(random:uniform(length(Peers)), Peers).
+  lists:nth(rand:uniform(length(Peers)), Peers).
+
 jitter(0) -> ok;
 jitter(Jitter) -> timer:sleep(random:uniform(Jitter)).

@@ -18,18 +18,36 @@ start(Nodes) ->
 stop(Logger) ->
   Logger ! stop.
 
-init(_) ->
-  loop().
+init(Nodes) ->
+  Clock = time:clock(Nodes),
+  loop(Clock, []).
 
-loop() ->
+loop(Clock, Queue) ->
   receive
     {log, From, Time, Msg} ->
-
-      log(From, Time, Msg),
-      loop();
+      ClockN = time:update(From, Time, Clock),
+%%      io:format("logger From ~w Time ~w Msg ~w Clock ~w Queue ~w~n", [From, Time, Msg, ClockN, Queue]),
+      Queued = sort([{From, Time, Msg} | Queue]),
+      case time:safe(Time, ClockN) of
+        true ->
+          QueueN = lists:foldl(
+            fun(Elem, Acc) ->
+              {FromN, TimeN, MsgN} = Elem,
+              case time:safe(TimeN, ClockN) of
+                true -> log(FromN, TimeN, MsgN), Acc;
+                false -> [{FromN, TimeN, MsgN} | Acc]
+              end
+            end, [], Queued),
+%%          io:format("logger QueueN ~w~n", [QueueN]),
+          loop(ClockN, sort(QueueN));
+        false -> loop(ClockN, Queued)
+      end;
     stop ->
       ok
   end.
 
 log(From, Time, Msg) ->
   io:format("log: ~w ~w ~p~n", [Time, From, Msg]).
+
+sort(Unsorted) ->
+  lists:sort(fun({_, N1, _}, {_, N2, _}) -> N1 =< N2 end, Unsorted).
