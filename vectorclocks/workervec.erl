@@ -6,7 +6,7 @@
 %%% @end
 %%% Created : 18. Sep 2016 3:31 PM
 %%%-------------------------------------------------------------------
--module(worker).
+-module(workervec).
 -author("Nick").
 
 %% API
@@ -22,7 +22,7 @@ init(Name, Log, Seed, Sleep, Jitter) ->
   random:seed(Seed, Seed, Seed),
   receive
     {peers, Peers} ->
-      loop(Name, time:zero(), Log, Peers, Sleep, Jitter);
+      loop(Name, timevec:clock([{Name, self()} | Peers]), Log, Peers, Sleep, Jitter);
     stop ->
       ok
   end.
@@ -34,8 +34,7 @@ loop(Name, Time, Log, Peers, Sleep, Jitter) ->
   Wait = rand:uniform(Sleep),
   receive
     {msg, TimeRec, Msg} ->
-      TimeN = time:inc(Name, time:merge(TimeRec, Time)),
-%%      io:format("loop ~w Time ~w TimeN ~w Received ~w~n", [Name, Time, TimeN, Msg]),
+      TimeN = timevec:inc(Name, timevec:merge(TimeRec, Time)),
       Log ! {log, Name, TimeN, {received, Msg}},
       loop(Name, TimeN, Log, Peers, Sleep, Jitter);
     stop ->
@@ -43,8 +42,8 @@ loop(Name, Time, Log, Peers, Sleep, Jitter) ->
     Error ->
       Log ! {log, Name, Time, {error, Error}}
   after Wait ->
-    Selected = select(Peers),
-    TimeN = time:inc(Name, Time),
+    {_, Selected} = select(Peers),
+    TimeN = timevec:inc(Name, Time),
     Message = {hello, TimeN},
     Selected ! {msg, TimeN, Message},
 

@@ -30,7 +30,7 @@ leq(Ti, Tj) ->
   end.
 
 clock(Nodes) ->
-  lists:foldl(fun(Node, Acc) -> [{Node, 0} | Acc] end, [], Nodes).
+  lists:foldl(fun(Node, Acc) -> [{Node, zero()} | Acc] end, [], Nodes).
 
 update(Node, Time, Clock) ->
   case lists:keyfind(Node, 1, Clock) of
