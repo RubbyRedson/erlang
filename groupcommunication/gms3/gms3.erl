@@ -12,7 +12,7 @@
 %% API
 -compile(export_all).
 -define(timeout, 5000).
--define(arghh, 1000).
+-define(arghh, 100).
 
 
 leader(Id, Master, N, Slaves, Group) ->
@@ -89,7 +89,7 @@ bcast(Id, Msg, Nodes) ->
 crash(Id) ->
   case random:uniform(?arghh) of
     ?arghh ->
-%%      io:format("leader ~w: crash~n", [Id]),
+      io:format("leader ~w: crash~n", [Id]),
       exit(no_luck);
     _ ->
       ok
