@@ -53,14 +53,14 @@ stabilize(Pred, Id, Successor) ->
   case Pred of
     nil ->
 %%      io:format("stabilize nil ~w Id ~w Succ ~w~n",[Pred, Id, Successor]),
-      Spid ! {notify, {Id, self()}},  % no idea, srsly TODO check
+      Spid ! {notify, {Id, self()}},
       Successor;
     {Id, _} ->
 %%      io:format("stabilize {Id, _} Pred ~w Id ~w Succ ~w~n",[Pred, Id, Successor]),
       Successor;
     {Skey, _} ->
 %%      io:format("stabilize {Skey, _} ~w Id ~w Succ ~w~n",[Pred, Id, Successor]),
-      Spid ! {notify, {Id, self()}}, % no idea, srsly TODO check
+      Spid ! {notify, {Id, self()}},
       Successor;
     {Xkey, Xpid} ->
       case key:between(Xkey, Id, Skey) of
@@ -69,7 +69,7 @@ stabilize(Pred, Id, Successor) ->
           Pred;
         false ->
 %%          io:format("stabilize {Xkey, Xpid} false ~w Id ~w Succ ~w~n",[Pred, Id, Successor]),
-          Spid ! {notify, {Xkey, Xpid}}, % no idea, srsly TODO check
+          Spid ! {notify, {Xkey, Xpid}},
           Successor
       end
   end.
@@ -119,7 +119,7 @@ init(Id, Peer) ->
   node(Id, Predecessor, Successor).
 
 connect(Id, nil) ->
-  {ok, {Id, self()}}; %TODO check dat stuff
+  {ok, {Id, self()}};
 
 connect(Id, Peer) ->
   Qref = make_ref(),
