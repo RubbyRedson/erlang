@@ -19,7 +19,7 @@ between(Key, From, To) ->
     true ->
       if From > To ->
         if Key > From -> true;
-          true -> Key < To
+          true -> Key =< To
         end;
         true -> (Key > From) and (Key =< To)
       end
