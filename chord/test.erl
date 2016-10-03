@@ -77,6 +77,30 @@ check([Key|Keys], P, Failed, Timeout) ->
 
 
     
+%% Benchmark
+
+bench_single() ->
+  Keys = keys(4000),
+  N = node2:start(3),
+  timer:sleep(2500),
+  add(Keys, N),
+  check(Keys, N).
+
+bench_multiple() ->
+  Keys1 = keys(1000),
+  Keys2 = keys(1000),
+  Keys3 = keys(1000),
+  Keys4 = keys(1000),
+  N = node2:start(3),
+  timer:sleep(2500),
+  add(Keys1, N),
+  add(Keys2, N),
+  add(Keys3, N),
+  add(Keys4, N),
+  check(Keys1, N),
+  check(Keys2, N),
+  check(Keys3, N),
+  check(Keys4, N).
 
 
 

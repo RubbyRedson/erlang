@@ -15,22 +15,22 @@
 -define(Timeout, 10000).
 
 node(Id, Predecessor, Successor, Store) ->
-  io:format("node Id ~w Succ ~w Predecessor ~w~n", [Id, Successor, Predecessor]),
+%%  io:format("node Id ~w Succ ~w Predecessor ~w~n", [Id, Successor, Predecessor]),
   receive
     {key, Qref, Peer} ->
 %%      io:format("key Id ~w Qref ~w Peer ~w~n",[Id, Qref, Peer]),
       Peer ! {Qref, Id},
       node(Id, Predecessor, Successor, Store);
     {notify, New} ->
-      io:format("notify Id ~w New ~w~n", [Id, New]),
+%%      io:format("notify Id ~w New ~w~n", [Id, New]),
       {Pred, Sto} = notify(New, Id, Predecessor, Store),
       node(Id, Pred, Successor, Sto);
     {request, Peer} ->
-      io:format("request Id ~w Peer ~w~n", [Id, Peer]),
+%%      io:format("request Id ~w Peer ~w~n", [Id, Peer]),
       request(Peer, Predecessor),
       node(Id, Predecessor, Successor, Store);
     {status, Pred} ->
-      io:format("status Id ~w Pred ~w~n", [Id, Pred]),
+%%      io:format("status Id ~w Pred ~w~n", [Id, Pred]),
       Succ = stabilize(Pred, Id, Successor),
       node(Id, Predecessor, Succ, Store);
     stabilize ->
@@ -46,7 +46,7 @@ node(Id, Predecessor, Successor, Store) ->
       forward_probe(Ref, T, Nodes, Id, Successor),
       node(Id, Predecessor, Successor, Store);
     {add, Key, Value, Qref, Client} ->
-      io:format("add Id ~w Key ~w Value ~w Qref ~w Client ~w~n", [Id , Key, Value, Qref, Client]),
+%%      io:format("add Id ~w Key ~w Value ~w Qref ~w Client ~w~n", [Id , Key, Value, Qref, Client]),
       Added = add(Key, Value, Qref, Client,
         Id, Predecessor, Successor, Store),
       node(Id, Predecessor, Successor, Added);
@@ -54,7 +54,7 @@ node(Id, Predecessor, Successor, Store) ->
       lookup(Key, Qref, Client, Id, Predecessor, Successor, Store),
       node(Id, Predecessor, Successor, Store);
     {handover, Elements} ->
-      io:format("handover Id ~w Elements ~w~n", [Id, Elements]),
+%%      io:format("handover Id ~w Elements ~w~n", [Id, Elements]),
       Merged = storage:merge(Store, Elements),
       node(Id, Predecessor, Successor, Merged)
   end.
@@ -181,10 +181,10 @@ lookup(Key, Qref, Client, Id, {Pkey, _}, Successor, Store) ->
   case key:between(Key, Pkey, Id) of
     true ->
       Result = storage:lookup(Key, Store),
-      io:format("lookup true Key ~w, Qref ~w Client ~w Id ~w Pkey ~w Store ~w Result ~w ~n",[Key, Qref, Client, Id, Pkey, Store, Result]),
+%%      io:format("lookup true Key ~w, Qref ~w Client ~w Id ~w Pkey ~w Store ~w Result ~w ~n",[Key, Qref, Client, Id, Pkey, Store, Result]),
       Client ! {Qref, Result};
     false ->
-      io:format("lookup false Key ~w, Qref ~w Client ~w Id ~w Pkey ~w Store ~w ~n",[Key, Qref, Client, Id, Pkey, Store]),
+%%      io:format("lookup false Key ~w, Qref ~w Client ~w Id ~w Pkey ~w Store ~w ~n",[Key, Qref, Client, Id, Pkey, Store]),
       {_, Spid} = Successor,
       Spid ! {lookup, Key, Qref, Client}
   end.

@@ -24,5 +24,5 @@ split(Id, Nkey, Store) ->
 lookup(Key, Store) ->
   case lists:keyfind(Key, 1, Store) of
     false -> io:format("Not found!! ~w in ~w~n", [Key, Store]), notfound;
-    {_, Value} -> Value
+    {_, Value} -> {Key, Value}
   end.
